@@ -1,4 +1,4 @@
-# NexDex Deployment Guide
+# NexDex Deployment Guide 🐍
 
 ## Quick Start
 
@@ -8,7 +8,7 @@
 2. GitHub Actions automatically builds and deploys to GitHub Pages
 3. Access at: `https://yourusername.github.io/nexdex`
 
-### 2. Deploy Backend to Render.com (Recommended - FREE)
+### 2. Deploy Python Backend to Render.com (Recommended - FREE)
 
 **Cost:** $0 (Free tier - no credit card required)
 
@@ -28,17 +28,17 @@
 
 3. **Configure Service**
    - **Name:** `nexdex-backend`
-   - **Environment:** Node
+   - **Environment:** Python
    - **Root Directory:** `backend` (important!)
-   - **Build Command:** `npm install`
-   - **Start Command:** `node server.js`
+   - **Build Command:** `pip install -r requirements.txt`
+   - **Start Command:** `python main.py`
    - **Plan:** Free tier (perfect for testing)
 
 4. **Set Environment Variables**
    - Click "Environment"
    - Add variable:
      ```
-     NODE_ENV = production
+     PORT = 5050
      CORS_ORIGIN = https://yourusername.github.io/nexdex
      ```
 

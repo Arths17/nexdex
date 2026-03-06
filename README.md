@@ -1,11 +1,12 @@
-# NexDex MVP
+# NexDex 🐍
 
 GitHub Repository: https://github.com/Arths17/nexdex
 
 AI-powered student platform for academic planning, opportunity discovery, and goal tracking.
 
 **Live Demo:** https://arths17.github.io/nexdex  
-**Status:** Production-Ready for Testing
+**Status:** Production-Ready for Testing  
+**Stack:** Python (Flask) Backend + React Frontend
 
 ## Current Features
 
@@ -20,8 +21,9 @@ AI-powered student platform for academic planning, opportunity discovery, and go
 ```
 nexdexofficial/
 ├── backend/
-│   ├── package.json
-│   └── server.js
+│   ├── main.py              (Python Flask backend)
+│   ├── requirements.txt     (Python dependencies)
+│   └── server.js           (Legacy Node.js - optional)
 ├── frontend/
 │   ├── package.json
 │   ├── index.html
@@ -39,13 +41,16 @@ nexdexofficial/
 └── README.md
 ```
 
-## Backend (Express)
+## Backend (Python/Flask) 🐍
 
 From the `backend/` folder:
 
 ```bash
-npm install
-node server.js
+# Install dependencies
+pip3 install -r requirements.txt
+
+# Run the server
+python3 main.py
 ```
 
 Backend runs on `http://localhost:5050` by default.
@@ -53,7 +58,7 @@ Backend runs on `http://localhost:5050` by default.
 To use a custom backend port:
 
 ```bash
-PORT=6000 node server.js
+PORT=6000 python3 main.py
 ```
 
 ### API Endpoints
