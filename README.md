@@ -48,6 +48,9 @@ PORT=6000 node server.js
 - `GET /tasks` → returns current tasks
 - `POST /tasks` → adds a new task
   - body: `{ "title": "Your task" }`
+- `PATCH /tasks/:id` → marks task complete/incomplete
+  - body: `{ "completed": true }` or `{ "completed": false }`
+- `DELETE /tasks/:id` → deletes a task
 - `GET /suggest` → returns dummy AI suggestion
 
 ## Frontend (React + Vite)
@@ -72,6 +75,7 @@ VITE_API_BASE_URL=http://localhost:6000
 - Dashboard fetches tasks from backend using Axios.
 - Input box allows adding new tasks.
 - New tasks are posted to backend and shown in UI immediately.
+- Tasks can be marked complete/incomplete and deleted from the dashboard.
 - Suggest button calls `GET /suggest` for the AI/ML stub response.
 
 ## Extension Ideas for Interns
