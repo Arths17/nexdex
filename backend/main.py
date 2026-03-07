@@ -1,64 +1,46 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS
+from flask_sqlalchemy import SQLAlchemy # The database tool
 from datetime import datetime
 import os
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///nexdex.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
 
 # In-memory data storage
-tasks = [
-    {"id": 1, "title": "Complete Physics Assignment", "completed": False, "deadline": "2026-03-10", "priority": "high", "category": "academics"},
-    {"id": 2, "title": "Study for Math Test", "completed": False, "deadline": "2026-03-08", "priority": "medium", "category": "academics"}
-]
+class User(db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password_hash = db.Column(db.String(256), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    tasks = db.relationship('Task', backref='owner', lazy=True)
 
-opportunities = [
-    {
-        "id": 1,
-        "title": "MIT Research Internship",
-        "type": "internship",
-        "field": "STEM",
-        "deadline": "2026-04-15",
-        "description": "Summer research program at MIT",
-        "url": "https://urop.mit.edu"
-    },
-    {
-        "id": 2,
-        "title": "Goldman Sachs Summer Analyst",
-        "type": "internship",
-        "field": "Business",
-        "deadline": "2026-03-30",
-        "description": "Investment banking internship",
-        "url": "https://goldmansachs.com/careers"
-    },
-    {
-        "id": 3,
-        "title": "National Science Olympiad",
-        "type": "competition",
-        "field": "STEM",
-        "deadline": "2026-05-01",
-        "description": "Team science competition",
-        "url": "https://soinc.org"
-    },
-    {
-        "id": 4,
-        "title": "Debate Championship",
-        "type": "extracurricular",
-        "field": "Humanities",
-        "deadline": "2026-04-20",
-        "description": "National debate tournament",
-        "url": "https://debate.org"
-    },
-    {
-        "id": 5,
-        "title": "Harvard Research Fellowship",
-        "type": "research",
-        "field": "STEM",
-        "deadline": "2026-06-01",
-        "description": "Summer research at Harvard",
-        "url": "https://prise.harvard.edu"
-    }
-]
+class Task(db.Model):
+    __tablename__ = 'tasks'
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    completed = db.Column(db.Boolean, nullable=False, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+class Opportunity(db.Model):
+    __tablename__ = 'opportunities'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    type = db.Column(db.String(50)) 
+    field = db.Column(db.String(50)) 
+    deadline = db.Column(db.String(50))
+    description = db.Column(db.Text)
+    url = db.Column(db.String(500))
 
 roadmaps = [
     {
@@ -93,32 +75,46 @@ roadmap_id_counter = 3
 
 @app.route('/tasks', methods=['GET'])
 def get_tasks():
-    return jsonify(tasks)
+    all_tasks = Task.query.all()
+
+    results = []
+    for task in all_tasks:
+        results.append({
+            "id": task.id,
+            "title": task.title,
+            "description": task.description,
+            "completed": task.completed,
+            "user_id": task.user_id
+        })
+    return jsonify(results)
 
 
 @app.route('/tasks', methods=['POST'])
 def add_task():
     global task_id_counter
     data = request.json
+
+    if not data or 'title' not in data or data['title'].strip() == "":
+        return jsonify({"error": "Title is required and cannot be empty"}), 400
     
-    new_task = {
-        "id": task_id_counter,
-        "title": data.get("title", "Untitled Task"),
-        "completed": False,
-        "deadline": data.get("deadline"),
-        "priority": data.get("priority", "medium"),
-        "category": data.get("category", "general"),
-        "roadmapId": data.get("roadmapId")
-    }
+    if 'user_id' not in data:
+        return jsonify({"error": "user_id is required to link this task"}), 400
+   
+    new_task = Task(
+        title = data.get("title"),
+        description = data.get("description"),
+        user_id = data.get("user_id")
+    )
+
+    db.session.add(new_task)
+    db.session.commit()
     
-    task_id_counter += 1
-    tasks.append(new_task)
-    return jsonify(new_task), 201
+    return jsonify({"message": "Task created", "id": new_task.id}), 201
 
 
-@app.route('/tasks/<int:task_id>', methods=['PATCH'])
+@app.route('/tasks/<int:task_id>', methods=['PATCH', 'PUT'])
 def update_task(task_id):
-    task = next((t for t in tasks if t["id"] == task_id), None)
+    task = Task.query.get(task_id)
     
     if not task:
         return jsonify({"error": "Task not found"}), 404
@@ -126,57 +122,54 @@ def update_task(task_id):
     data = request.json
     
     # Update fields
+    if "title" in data:
+        task.title = data["title"]
+    if "description" in data:
+        task.description = data["description"]
     if "completed" in data:
-        task["completed"] = data["completed"]
-    if "deadline" in data:
-        task["deadline"] = data["deadline"]
-    if "priority" in data:
-        task["priority"] = data["priority"]
-    if "category" in data:
-        task["category"] = data["category"]
+        task.completed = data["completed"]
+
+    db.session.commit()
     
-    return jsonify(task)
+    return jsonify({"message": "Task updated", "id": task.id})
 
 
 @app.route('/tasks/<int:task_id>', methods=['DELETE'])
 def delete_task(task_id):
     global tasks
-    task = next((t for t in tasks if t["id"] == task_id), None)
+    task = Task.query.get(task_id)
     
     if not task:
         return jsonify({"error": "Task not found"}), 404
+
+    db.session.delete(task)
+    db.session.commit()    
     
-    tasks = [t for t in tasks if t["id"] != task_id]
-    return jsonify({"message": "Task deleted", "id": task_id})
+    return jsonify({"message": "Task deleted", "id": task_id}), 200
 
 
 # ==================== OPPORTUNITIES ENDPOINTS ====================
 
 @app.route('/opportunities', methods=['GET'])
 def get_opportunities():
-    filtered = opportunities.copy()
-    
-    # Filter by type
+    query = Opportunity.query
+
     opp_type = request.args.get('type')
-    if opp_type:
-        filtered = [o for o in filtered if o["type"].lower() == opp_type.lower()]
-    
-    # Filter by field
     field = request.args.get('field')
+
+    if opp_type:
+        query = query.filter(Opportunity.type.ilike(opp_type))
     if field:
-        filtered = [o for o in filtered if o["field"].lower() == field.lower()]
-    
-    # Search by keyword
-    search = request.args.get('search')
-    if search:
-        search_lower = search.lower()
-        filtered = [o for o in filtered if 
-                   search_lower in o["title"].lower() or 
-                   search_lower in o["description"].lower()]
-    
-    return jsonify(filtered)
+        query = query.filter(Opportunity.field.ilike(field))
 
-
+    results = query.all()
+    return jsonify([{
+        "id": o.id,
+        "title": o.title,
+        "type": o.type,
+        "field": o.field
+    } for o in results])
+    
 # ==================== ROADMAPS ENDPOINTS ====================
 
 @app.route('/roadmaps', methods=['GET'])
@@ -223,7 +216,7 @@ def toggle_milestone(roadmap_id, milestone_id):
 
 @app.route('/suggest', methods=['GET'])
 def get_suggestion():
-    completed_tasks = len([t for t in tasks if t["completed"]])
+    completed_tasks = Task.query.filter_by(completed=True).count()
     
     suggestions = [
         "Focus on completing high-priority tasks first!",
@@ -256,6 +249,16 @@ def health_check():
         }
     })
 
+with app.app_context():
+    db.create_all()
+
+@app.errorhandler(404)
+def not_found(error):
+    return jsonify({"error": "Resource not found", "status": 400}), 400
+
+@app.errorhandler(500)
+def server_error(error):
+    return jsonify({"error:" "Internal server error", "status"}), 500
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5050))
