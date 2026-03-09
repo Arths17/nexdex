@@ -35,3 +35,11 @@ yarn-error.log*
 # OS
 Thumbs.db
 frontend/node_modules
+
+# venv
+.venv/
+venv/env/
+__pycache__/
+
+
+
