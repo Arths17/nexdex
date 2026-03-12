@@ -6,6 +6,8 @@ function Dashboard() {
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [priority, setPriority] = useState('low')
+
 
   const loadTasks = async () => {
     try {
@@ -33,7 +35,7 @@ function Dashboard() {
 
     try {
       setError('');
-      const response = await api.post('/tasks', { title });
+      const response = await api.post('/tasks', { title,priority });
       setTasks((previousTasks) => [...previousTasks, response.data]);
       setNewTaskTitle('');
     } catch (requestError) {
@@ -62,7 +64,7 @@ function Dashboard() {
       await api.delete(`/tasks/${taskId}`);
       setTasks((previousTasks) => previousTasks.filter((item) => item.id !== taskId));
     } catch (requestError) {
-      setError('Could not delete task. Please try again.');
+      setError('Cfould not delete task. Please try again.');
     }
   };
 
@@ -78,6 +80,14 @@ function Dashboard() {
           value={newTaskTitle}
           onChange={(event) => setNewTaskTitle(event.target.value)}
         />
+        <select
+          value={priority}
+          onChange={(event) => setPriority(event.target.value)}
+        >
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
         <button type="submit">Add Task</button>
       </form>
 
@@ -89,7 +99,13 @@ function Dashboard() {
         <ul className="task-list">
           {tasks.map((task) => (
             <li key={task.id} className={task.completed ? 'task-item completed' : 'task-item'}>
-              <span>{task.title}</span>
+              <div className="task-info">
+                <span>{task.title}</span>
+
+                <span>
+                  {task.priority}
+                </span>
+              </div>
               <div className="task-actions">
                 <button type="button" onClick={() => handleToggleComplete(task)}>
                   {task.completed ? 'Mark Incomplete' : 'Mark Complete'}
