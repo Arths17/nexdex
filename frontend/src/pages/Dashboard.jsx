@@ -84,6 +84,7 @@ function Dashboard() {
           value={newTaskTitle}
           onChange={(event) => setNewTaskTitle(event.target.value)}
         />
+        <input type="date" />
         <select
           value={priority}
           onChange={(event) => setPriority(event.target.value)}
