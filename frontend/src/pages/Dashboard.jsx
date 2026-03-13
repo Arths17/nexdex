@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../api';
-
+import { FaArrowDown, FaEquals, FaArrowUp } from "react-icons/fa";
 function Dashboard() {
   const [tasks, setTasks] = useState([]);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [priority, setPriority] = useState('low')
+
+
+
+  // priority level icons
 
 
   const loadTasks = async () => {
@@ -35,7 +39,7 @@ function Dashboard() {
 
     try {
       setError('');
-      const response = await api.post('/tasks', { title,priority });
+      const response = await api.post('/tasks', { title, priority });
       setTasks((previousTasks) => [...previousTasks, response.data]);
       setNewTaskTitle('');
     } catch (requestError) {
@@ -98,13 +102,14 @@ function Dashboard() {
       ) : (
         <ul className="task-list">
           {tasks.map((task) => (
-            <li key={task.id} className={task.completed ? 'task-item completed' : 'task-item'}>
+            <li
+              key={task.id}
+              className={`task-item priority-${task.priority} ${task.completed ? 'completed' : ''}`}
+            >
               <div className="task-info">
                 <span>{task.title}</span>
+                <span className={`priority-badge priority-badge ${task.priority}`}>{task.priority}</span>
 
-                <span>
-                  {task.priority}
-                </span>
               </div>
               <div className="task-actions">
                 <button type="button" onClick={() => handleToggleComplete(task)}>
