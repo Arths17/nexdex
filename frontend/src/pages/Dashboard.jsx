@@ -138,14 +138,21 @@ function Dashboard() {
       ) : (
         <ul className="task-list">
           {tasks.map((task) => (
+            <div className='task-section'>  
+            <ul className='task-list'>
+
             <li
               key={task.id}
               className={`task-item priority-${task.priority} ${task.completed ? 'completed' : ''}`}
             >
               <div className="task-info">
                 <span>{task.title}</span>
-                <span className={`priority-badge priority-badge ${task.priority}`}>{task.priority}</span>
-                <span className='deadline'>{task.countdown}</span>
+                <div className='task-meta'>
+
+                <span className='deadline'>Deadline: {task.deadline}</span>
+                <span className={`priority-badge priority-badge ${task.priority}`}>{task.priority.toUpperCase()}</span>
+                </div>
+
 
 
               </div>
@@ -161,7 +168,10 @@ function Dashboard() {
                   Delete
                 </button>
               </div>
+
             </li>
+            </ul>
+            </div>
           ))}
         </ul>
       )}
