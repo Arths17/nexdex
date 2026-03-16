@@ -7,6 +7,7 @@ function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [priority, setPriority] = useState('low')
+  const [deadline,setDeadline] = useState('')
 
 
 
@@ -29,6 +30,36 @@ function Dashboard() {
     loadTasks();
   }, []);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTasks((prevTasks) =>
+        prevTasks.map((task) => {
+          if (!task.deadline) return task;
+
+          const now = new Date();
+          const deadlineDate = new Date(task.deadline);
+          const diff = deadlineDate - now;
+
+          if (diff <= 0) {
+            return { ...task, countdown: 'Expired' };
+          }
+
+          const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+          const minutes = Math.floor((diff / (1000 * 60)) % 60);
+          const seconds = Math.floor((diff / 1000) % 60);
+
+          return {
+            ...task,
+            countdown: `${days}d ${hours}h ${minutes}m ${seconds}s`,
+          };
+        })
+      );
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   const handleAddTask = async (event) => {
     event.preventDefault();
 
@@ -39,7 +70,7 @@ function Dashboard() {
 
     try {
       setError('');
-      const response = await api.post('/tasks', { title, priority });
+      const response = await api.post('/tasks', { title, priority, deadline });
       setTasks((previousTasks) => [...previousTasks, response.data]);
       setNewTaskTitle('');
     } catch (requestError) {
@@ -84,7 +115,11 @@ function Dashboard() {
           value={newTaskTitle}
           onChange={(event) => setNewTaskTitle(event.target.value)}
         />
-        <input type="date" />
+        <input 
+        type="date"
+        value={deadline}
+        onChange={(e)=> setDeadline(e.target.value) }
+         />
         <select
           value={priority}
           onChange={(event) => setPriority(event.target.value)}
@@ -110,6 +145,8 @@ function Dashboard() {
               <div className="task-info">
                 <span>{task.title}</span>
                 <span className={`priority-badge priority-badge ${task.priority}`}>{task.priority}</span>
+                <span className='deadline'>{task.countdown}</span>
+
 
               </div>
               <div className="task-actions">
