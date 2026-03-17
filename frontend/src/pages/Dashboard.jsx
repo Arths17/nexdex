@@ -8,7 +8,10 @@ function Dashboard() {
   const [error, setError] = useState('');
   const [priority, setPriority] = useState('low')
   const [deadline, setDeadline] = useState('')
-  const [category,setCategory] = useState('')
+  const [category, setCategory] = useState('')
+  const [taskUpdate, setTaskUpdate] = useState(false)
+  const [editingTaskId, setEditingTaskId] = useState(null)
+  const [editedTitle, setEditedTitle] = useState('')
 
 
 
@@ -42,7 +45,7 @@ function Dashboard() {
 
     try {
       setError('');
-      const response = await api.post('/tasks', { title, priority, deadline,category });
+      const response = await api.post('/tasks', { title, priority, deadline, category });
       setTasks((previousTasks) => [...previousTasks, response.data]);
       setNewTaskTitle('');
     } catch (requestError) {
@@ -65,11 +68,26 @@ function Dashboard() {
     }
   };
 
-  const handleUpdateTask = (taskId) => {
+  const handleTaskUpdate = async (task) => {
+    setTaskUpdate(true)
+    setEditingTaskId(task.id)
+    setEditedTitle(task.title)
+  }
+
+  const handleSaveUpdate = async (taskId) => {
     try {
       setError('')
+      const response = await api.patch(`/tasks/${taskId}`, {
+        title: editedTitle
+      })
+      setTasks((previousTasks) =>
+        previousTasks.map((task) =>
+          task.id === taskId ? response.data : task
+        )
+      )
+
     } catch (requestError) {
-      setError('could not update task. Please try again ')
+      setError('Could not update task status. Please try again.');
 
     }
 
@@ -136,7 +154,28 @@ function Dashboard() {
                   className={`task-item priority-${task.priority} ${task.completed ? 'completed' : ''}`}
                 >
                   <div className="task-info">
-                    <span>{task.title}</span>
+                    {
+                      taskUpdate && task.id === editingTaskId ? (
+                        <div className='task-info'>
+                          <input type="text"
+                            value={editedTitle}
+                            onChange={(e) => setEditedTitle(e.target.value)}
+                          />
+                          <button
+                            className='success'
+                            onClick={() => handleSaveUpdate(task.id)}
+                          >update</button>
+                          <button className='danger'
+                            onClick={() => setTaskUpdate(false)}
+                          >
+                            cancel</button>
+                        </div>
+                      ) : (
+
+                        <span>{task.title}</span>
+                      )
+
+                    }
                     <div className='task-meta'>
 
                       <span className='deadline'>Deadline: {task.deadline}</span>
@@ -157,6 +196,12 @@ function Dashboard() {
                     <button type="button" onClick={() => handleToggleComplete(task)}>
                       {task.completed ? 'Mark Incomplete' : 'Mark Complete'}
                     </button>
+                    <button className='success'
+                      onClick={() => handleTaskUpdate(task)}
+                    >
+
+                      update
+                    </button>
                     <button
                       type="button"
                       className="danger"
@@ -164,6 +209,7 @@ function Dashboard() {
                     >
                       Delete
                     </button>
+
 
                   </div>
 

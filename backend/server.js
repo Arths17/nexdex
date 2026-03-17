@@ -138,6 +138,7 @@ app.post('/tasks', (req, res) => {
 
 app.patch('/tasks/:id', (req, res) => {
   const taskId = Number.parseInt(req.params.id, 10);
+  console.log("hashir")
   const { completed, deadline, priority, category } = req.body;
 
   if (!Number.isInteger(taskId)) {
@@ -162,6 +163,7 @@ app.patch('/tasks/:id', (req, res) => {
   if (category) {
     task.category = category;
   }
+  console.log(task)
 
   return res.json(task);
 });
