@@ -105,7 +105,7 @@ function SmartScheduler() {
               <h3>No Deadline Set</h3>
               <ul className="task-list">
                 {otherTasks.map((task) => (
-                  <li key={task.id} className={`task-item priority-${task.priority}`}>
+                  <li key={task.id} className={`task-item priority-${task.priority}`}>  
                     <span>{task.title}</span>
                     <button
                       type="button"

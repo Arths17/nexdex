@@ -7,7 +7,8 @@ function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [priority, setPriority] = useState('low')
-  const [deadline,setDeadline] = useState('')
+  const [deadline, setDeadline] = useState('')
+  const [category,setCategory] = useState('')
 
 
 
@@ -30,35 +31,6 @@ function Dashboard() {
     loadTasks();
   }, []);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTasks((prevTasks) =>
-        prevTasks.map((task) => {
-          if (!task.deadline) return task;
-
-          const now = new Date();
-          const deadlineDate = new Date(task.deadline);
-          const diff = deadlineDate - now;
-
-          if (diff <= 0) {
-            return { ...task, countdown: 'Expired' };
-          }
-
-          const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-          const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-          const minutes = Math.floor((diff / (1000 * 60)) % 60);
-          const seconds = Math.floor((diff / 1000) % 60);
-
-          return {
-            ...task,
-            countdown: `${days}d ${hours}h ${minutes}m ${seconds}s`,
-          };
-        })
-      );
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   const handleAddTask = async (event) => {
     event.preventDefault();
@@ -70,7 +42,7 @@ function Dashboard() {
 
     try {
       setError('');
-      const response = await api.post('/tasks', { title, priority, deadline });
+      const response = await api.post('/tasks', { title, priority, deadline,category });
       setTasks((previousTasks) => [...previousTasks, response.data]);
       setNewTaskTitle('');
     } catch (requestError) {
@@ -92,6 +64,16 @@ function Dashboard() {
       setError('Could not update task status. Please try again.');
     }
   };
+
+  const handleUpdateTask = (taskId) => {
+    try {
+      setError('')
+    } catch (requestError) {
+      setError('could not update task. Please try again ')
+
+    }
+
+  }
 
   const handleDeleteTask = async (taskId) => {
     try {
@@ -115,11 +97,11 @@ function Dashboard() {
           value={newTaskTitle}
           onChange={(event) => setNewTaskTitle(event.target.value)}
         />
-        <input 
-        type="date"
-        value={deadline}
-        onChange={(e)=> setDeadline(e.target.value) }
-         />
+        <input
+          type="date"
+          value={deadline}
+          onChange={(e) => setDeadline(e.target.value)}
+        />
         <select
           value={priority}
           onChange={(event) => setPriority(event.target.value)}
@@ -127,6 +109,14 @@ function Dashboard() {
           <option value="low">Low</option>
           <option value="medium">Medium</option>
           <option value="high">High</option>
+        </select>
+        <select
+          value={category}
+          onChange={(event) => setCategory(event.target.value)}
+        >
+          <option value="study">Study</option>
+          <option value="assignment">Assignment</option>
+          <option value="academic">Academic</option>
         </select>
         <button type="submit">Add Task</button>
       </form>
@@ -138,39 +128,47 @@ function Dashboard() {
       ) : (
         <ul className="task-list">
           {tasks.map((task) => (
-            <div className='task-section'>  
-            <ul className='task-list'>
+            <div className='task-section'>
+              <ul className='task-list'>
 
-            <li
-              key={task.id}
-              className={`task-item priority-${task.priority} ${task.completed ? 'completed' : ''}`}
-            >
-              <div className="task-info">
-                <span>{task.title}</span>
-                <div className='task-meta'>
-
-                <span className='deadline'>Deadline: {task.deadline}</span>
-                <span className={`priority-badge priority-badge ${task.priority}`}>{task.priority.toUpperCase()}</span>
-                </div>
-
-
-
-              </div>
-              <div className="task-actions">
-                <button type="button" onClick={() => handleToggleComplete(task)}>
-                  {task.completed ? 'Mark Incomplete' : 'Mark Complete'}
-                </button>
-                <button
-                  type="button"
-                  className="danger"
-                  onClick={() => handleDeleteTask(task.id)}
+                <li
+                  key={task.id}
+                  className={`task-item priority-${task.priority} ${task.completed ? 'completed' : ''}`}
                 >
-                  Delete
-                </button>
-              </div>
+                  <div className="task-info">
+                    <span>{task.title}</span>
+                    <div className='task-meta'>
 
-            </li>
-            </ul>
+                      <span className='deadline'>Deadline: {task.deadline}</span>
+
+                      <span className={`category-badge ${task.category}`}>
+                        {task.category?.toUpperCase()}
+                      </span>
+
+                      <span className={`priority-badge ${task.priority}`}>
+                        {task.priority.toUpperCase()}
+                      </span>
+
+                    </div>
+
+
+                  </div>
+                  <div className="task-actions">
+                    <button type="button" onClick={() => handleToggleComplete(task)}>
+                      {task.completed ? 'Mark Incomplete' : 'Mark Complete'}
+                    </button>
+                    <button
+                      type="button"
+                      className="danger"
+                      onClick={() => handleDeleteTask(task.id)}
+                    >
+                      Delete
+                    </button>
+
+                  </div>
+
+                </li>
+              </ul>
             </div>
           ))}
         </ul>
