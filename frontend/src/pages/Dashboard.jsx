@@ -12,7 +12,8 @@ function Dashboard() {
   const [taskUpdate, setTaskUpdate] = useState(false)
   const [editingTaskId, setEditingTaskId] = useState(null)
   const [editedTitle, setEditedTitle] = useState('')
-
+  const [selectedTasks, setSelectedTasks] = useState([])
+  const [selectAll,setAllSelect] = useState(false)
 
 
   // priority level icons
@@ -103,6 +104,21 @@ function Dashboard() {
     }
   };
 
+  // handle selected tasks 
+
+  const handleSelectedTasks = (taskId) => {
+
+    setSelectedTasks((prev) => {
+      if (prev.includes(taskId)) {
+        return prev.filter(task => task !== taskId)
+      }
+      else {
+        return [...prev, taskId]
+      }
+    })
+
+  }
+
   return (
     <section className="card">
       <h1>Dashboard</h1>
@@ -139,6 +155,32 @@ function Dashboard() {
         <button type="submit">Add Task</button>
       </form>
 
+      {
+        tasks.length > 0 && (
+          <div className='bulk-actions-bar'>
+            <div className='bulk-select'>
+
+            <label>
+              <input
+                type="checkbox"
+              />
+              Select All
+            </label>
+            </div>
+
+            <div className='bulk-buttons'>
+
+            <button
+            className='bulk-complete'
+            >Complete</button>
+            <button>Delete</button>
+            </div>
+
+          </div>
+
+        )
+      }
+
       {error && <p className="error">{error}</p>}
 
       {loading ? (
@@ -154,6 +196,10 @@ function Dashboard() {
                   className={`task-item priority-${task.priority} ${task.completed ? 'completed' : ''}`}
                 >
                   <div className="task-info">
+                    <input
+                      type="checkbox"
+                      onChange={() => handleSelectedTasks(task.id)} />
+
                     {
                       taskUpdate && task.id === editingTaskId ? (
                         <div className='task-info'>
@@ -171,8 +217,9 @@ function Dashboard() {
                             cancel</button>
                         </div>
                       ) : (
-
-                        <span>{task.title}</span>
+                        <>
+                          <span>{task.title}</span>
+                        </>
                       )
 
                     }

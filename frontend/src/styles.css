@@ -675,3 +675,19 @@
   background: #ede9fe;
   color: #5b21b6;
 }
+
+.bulk-actions-bar {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #e9ecef;
+}
+.bulk-select {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
