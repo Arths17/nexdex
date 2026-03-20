@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../api';
-import { FaArrowDown, FaEquals, FaArrowUp } from "react-icons/fa";
+import {  FaTrashAlt, FaCheck, FaCheckDouble } from "react-icons/fa";
 function Dashboard() {
   const [tasks, setTasks] = useState([]);
   const [newTaskTitle, setNewTaskTitle] = useState('');
@@ -13,7 +13,8 @@ function Dashboard() {
   const [editingTaskId, setEditingTaskId] = useState(null)
   const [editedTitle, setEditedTitle] = useState('')
   const [selectedTasks, setSelectedTasks] = useState([])
-  const [selectAll,setSelectAll] = useState(false)
+  const [selectAll, setSelectAll] = useState(false)
+  const [bulkCompleteToggle, setBulkCompleteToggle] = useState(false)
 
 
   // priority level icons
@@ -122,28 +123,84 @@ function Dashboard() {
 
   // handleSelectAll
 
-    const handleSelectAll = () => {
-      if (selectAll) {
-        setSelectedTasks([]);
-      } else {
-        setSelectedTasks(tasks.map(task => task.id));
-      }
-      setSelectAll(!selectAll);
-    };
-
-    // handle bulk delete 
-    const handleBulkDelete = async() => {
-      try {
-        await Promise.all(selectedTasks.map(taskId => api.delete(`/tasks/${taskId}`)))
-        setTasks((prev)=>(
-         prev.filter(task => !selectedTasks.includes(task.id))
-
-        ))
-      } catch (requestError) {
-        setError("Could not delete tasks, some error has occurred")
-      }
-
+  const handleSelectAll = () => {
+    if (selectAll) {
+      setSelectedTasks([]);
+    } else {
+      setSelectedTasks(tasks.map(task => task.id));
     }
+    setSelectAll(!selectAll);
+  };
+
+  // handle bulk delete 
+  const handleBulkDelete = async () => {
+    try {
+      await Promise.all(selectedTasks.map(taskId => api.delete(`/tasks/${taskId}`)))
+      setTasks((prev) => (
+        prev.filter(task => !selectedTasks.includes(task.id))
+
+      ))
+    } catch (requestError) {
+      setError("Could not delete tasks, some error has occurred")
+    }
+
+  }
+
+  // hanlde bulk update
+  const handleBulkComplete = async () => {
+    if (selectedTasks.length === 0) {
+      setError('Please select tasks to mark as complete');
+      return;
+    }
+
+    try {
+      setError('');
+      await Promise.all(selectedTasks.map(taskId =>
+        api.patch(`/tasks/${taskId}`, { completed: true })
+
+      ));
+
+      setTasks(prevTasks =>
+        prevTasks.map(task =>
+          selectedTasks.includes(task.id)
+            ? { ...task, completed: true }
+            : task
+        )
+      );
+      setSelectedTasks([]);
+      setSelectAll(false);
+      setBulkCompleteToggle(true)
+    } catch (requestError) {
+      setError('Could not mark tasks as complete. Please try again.');
+    }
+  };
+
+  // handle bulk incomplete 
+  const handleBulkIncomplete = async () => {
+    if (selectedTasks.length === 0) {
+      setError('Please select tasks to mark as incomplete');
+      return;
+    }
+
+    try {
+      setError('');
+      await Promise.all(selectedTasks.map(taskId =>
+        api.patch(`/tasks/${taskId}`, { completed: false })
+      ));
+
+      setTasks(prevTasks =>
+        prevTasks.map(task =>
+          selectedTasks.includes(task.id)
+            ? { ...task, completed: false }
+            : task
+        )
+      );
+      setSelectedTasks([]);
+      setSelectAll(false);
+    } catch (requestError) {
+      setError('Could not mark tasks as incomplete. Please try again.');
+    }
+  };
 
   return (
     <section className="card">
@@ -186,23 +243,45 @@ function Dashboard() {
           <div className='bulk-actions-bar'>
             <div className='bulk-select'>
 
-            <label>
-              <input
-                type="checkbox"
-                onChange={handleSelectAll}
-              />
-              Select All
-            </label>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={selectAll}
+                  onChange={handleSelectAll}
+                />
+                Select All
+              </label>
             </div>
 
-            <div className='bulk-buttons'>
+            <div className='bulk-buttons  '>
 
-            <button disabled={selectedTasks.length === 0 }>Complete</button>
-            <button 
-            disabled={selectedTasks.length === 0 }
-            onClick={handleBulkDelete}
 
-            >Delete</button>
+              <button
+                disabled={selectedTasks.length === 0}
+                onClick={handleBulkComplete}
+                className='bulk-complete'
+              >
+                <span><FaCheck/> </span>
+                Complete
+                </button>
+              <button
+                disabled={selectedTasks.length === 0}
+                onClick={handleBulkIncomplete}
+                className='bulk-incomplete'
+              >
+                <span><FaCheckDouble/> </span>
+                Incomplete</button>
+
+
+              <button
+                disabled={selectedTasks.length === 0}
+                onClick={handleBulkDelete}
+                className='bulk-delete'
+           
+              >
+                <span><FaTrashAlt/> </span>
+                Delete
+                </button>
             </div>
 
           </div>
@@ -240,11 +319,14 @@ function Dashboard() {
                           <button
                             className='success'
                             onClick={() => handleSaveUpdate(task.id)}
-                          >update</button>
+                          >
+                            update
+                          </button>
                           <button className='danger'
                             onClick={() => setTaskUpdate(false)}
                           >
-                            cancel</button>
+                            cancel
+                          </button>
                         </div>
                       ) : (
                         <>

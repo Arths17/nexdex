@@ -429,7 +429,7 @@
     }
 
     .opp-field {
-      color: #6b7280; 
+      color: #6b7280;
       font-size: 12px;
       margin: 8px 0;
     }
@@ -640,54 +640,448 @@
 
 
     .category-badge {
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: bold;
-}
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: bold;
+    }
 
-/* Study */
-.category-badge.study {
-  background: #dbeafe;
-  color: #1e40af;
-}
+    /* Study */
+    .category-badge.study {
+      background: #dbeafe;
+      color: #1e40af;
+    }
 
-/* Assignment */
-.category-badge.assignment {
-  background: #fef3c7;
-  color: #92400e;
-}
+    /* Assignment */
+    .category-badge.assignment {
+      background: #fef3c7;
+      color: #92400e;
+    }
 
-/* Exam */
-.category-badge.exam {
-  background: #fee2e2;
-  color: #991b1b;
-}
+    /* Exam */
+    .category-badge.exam {
+      background: #fee2e2;
+      color: #991b1b;
+    }
 
-/* Project */
-.category-badge.project {
-  background: #dcfce7;
-  color: #166534;
-}
+    /* Project */
+    .category-badge.project {
+      background: #dcfce7;
+      color: #166534;
+    }
 
-/* Personal */
-.category-badge.personal {
-  background: #ede9fe;
-  color: #5b21b6;
-}
+    /* Personal */
+    .category-badge.personal {
+      background: #ede9fe;
+      color: #5b21b6;
+    }
 
-.bulk-actions-bar {
-  background: #f8f9fa;
-  padding: 1rem;
-  border-radius: 8px;
-  margin: 1rem 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border: 1px solid #e9ecef;
-}
-.bulk-select {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
+    /* Bulk Actions Bar */
+    .bulk-actions-bar {
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      border: 1px solid #e9ecef;
+    }
+
+    .bulk-select {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .bulk-select label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .bulk-select input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .selected-count {
+      font-size: 0.9rem;
+      color: #6c757d;
+      font-weight: 500;
+    }
+
+    .bulk-buttons {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .bulk-buttons button {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .bulk-buttons button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .bulk-complete {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .bulk-complete:hover:not(:disabled) {
+      background-color: #218838;
+      transform: translateY(-1px);
+    }
+
+    .bulk-incomplete {
+      background-color: #ffc107;
+      color: #212529;
+    }
+
+    .bulk-incomplete:hover:not(:disabled) {
+      background-color: #e0a800;
+      transform: translateY(-1px);
+    }
+
+    .bulk-delete {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .bulk-delete:hover:not(:disabled) {
+      background-color: #c82333;
+      transform: translateY(-1px);
+    }
+
+    /* Task item checkbox */
+    .task-checkbox {
+      margin-right: 1rem;
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    /* Adjust task-info layout to accommodate checkbox */
+    .task-info {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      flex: 1;
+    }
+
+    .task-title {
+      font-weight: 500;
+      flex: 1;
+    }
+
+    /* Priority icons */
+    .priority-icon {
+      font-size: 0.8rem;
+      margin-right: 0.5rem;
+    }
+
+    .priority-icon.high {
+      color: #dc3545;
+    }
+
+    .priority-icon.medium {
+      color: #ffc107;
+    }
+
+    .priority-icon.low {
+      color: #28a745;
+    }
+
+    /* Bulk Actions Bar */
+    .bulk-actions-bar {
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      border: 1px solid #e9ecef;
+    }
+
+    .bulk-select {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .bulk-select label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .bulk-select input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .selected-count {
+      font-size: 0.9rem;
+      color: #6c757d;
+      font-weight: 500;
+    }
+
+    .bulk-buttons {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .bulk-buttons button {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .bulk-buttons button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .bulk-complete {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .bulk-complete:hover:not(:disabled) {
+      background-color: #218838;
+      transform: translateY(-1px);
+    }
+
+    .bulk-incomplete {
+      background-color: #ffc107;
+      color: #212529;
+    }
+
+    .bulk-incomplete:hover:not(:disabled) {
+      background-color: #e0a800;
+      transform: translateY(-1px);
+    }
+
+    .bulk-delete {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .bulk-delete:hover:not(:disabled) {
+      background-color: #c82333;
+      transform: translateY(-1px);
+    }
+
+    /* Task item checkbox */
+    .task-checkbox {
+      margin-right: 1rem;
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    /* Adjust task-info layout to accommodate checkbox */
+    .task-info {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      flex: 1;
+    }
+
+    .task-title {
+      font-weight: 500;
+      flex: 1;
+    }
+
+    /* Priority icons */
+    .priority-icon {
+      font-size: 0.8rem;
+      margin-right: 0.5rem;
+    }
+
+    .priority-icon.high {
+      color: #dc3545;
+    }
+
+    .priority-icon.medium {
+      color: #ffc107;
+    }
+
+    .priority-icon.low {
+      color: #28a745;
+    }
+
+
+
+
+
+
+
+    /* Bulk Actions Bar */
+    .bulk-actions-bar {
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      border: 1px solid #e9ecef;
+    }
+
+    .bulk-select {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .bulk-select label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .bulk-select input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .selected-count {
+      font-size: 0.9rem;
+      color: #6c757d;
+      font-weight: 500;
+    }
+
+    .bulk-buttons {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .bulk-buttons button {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .bulk-buttons button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .bulk-complete {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .bulk-complete:hover:not(:disabled) {
+      background-color: #218838;
+      transform: translateY(-1px);
+    }
+
+    .bulk-incomplete {
+      background-color: #ffc107;
+      color: #212529;
+    }
+
+    .bulk-incomplete:hover:not(:disabled) {
+      background-color: #e0a800;
+      transform: translateY(-1px);
+    }
+
+    .bulk-delete {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .bulk-delete:hover:not(:disabled) {
+      background-color: #c82333;
+      transform: translateY(-1px);
+    }
+
+    /* Task item checkbox */
+    .task-checkbox {
+      margin-right: 1rem;
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    /* Adjust task-info layout to accommodate checkbox */
+    .task-info {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      flex: 1;
+    }
+
+    .task-title {
+      font-weight: 500;
+      flex: 1;
+    }
+
+    /* Priority icons */
+    .priority-icon {
+      font-size: 0.8rem;
+      margin-right: 0.5rem;
+    }
+
+    .priority-icon.high {
+      color: #dc3545;
+    }
+
+    .priority-icon.medium {
+      color: #ffc107;
+    }
+
+    .priority-icon.low {
+      color: #28a745;
+    }
+
+    
