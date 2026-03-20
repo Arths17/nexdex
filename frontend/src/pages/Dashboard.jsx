@@ -13,7 +13,7 @@ function Dashboard() {
   const [editingTaskId, setEditingTaskId] = useState(null)
   const [editedTitle, setEditedTitle] = useState('')
   const [selectedTasks, setSelectedTasks] = useState([])
-  const [selectAll,setAllSelect] = useState(false)
+  const [selectAll,setSelectAll] = useState(false)
 
 
   // priority level icons
@@ -119,6 +119,32 @@ function Dashboard() {
 
   }
 
+
+  // handleSelectAll
+
+    const handleSelectAll = () => {
+      if (selectAll) {
+        setSelectedTasks([]);
+      } else {
+        setSelectedTasks(tasks.map(task => task.id));
+      }
+      setSelectAll(!selectAll);
+    };
+
+    // handle bulk delete 
+    const handleBulkDelete = async() => {
+      try {
+        await Promise.all(selectedTasks.map(taskId => api.delete(`/tasks/${taskId}`)))
+        setTasks((prev)=>(
+         prev.filter(task => !selectedTasks.includes(task.id))
+
+        ))
+      } catch (requestError) {
+        setError("Could not delete tasks, some error has occurred")
+      }
+
+    }
+
   return (
     <section className="card">
       <h1>Dashboard</h1>
@@ -163,6 +189,7 @@ function Dashboard() {
             <label>
               <input
                 type="checkbox"
+                onChange={handleSelectAll}
               />
               Select All
             </label>
@@ -170,10 +197,12 @@ function Dashboard() {
 
             <div className='bulk-buttons'>
 
-            <button
-            className='bulk-complete'
-            >Complete</button>
-            <button>Delete</button>
+            <button disabled={selectedTasks.length === 0 }>Complete</button>
+            <button 
+            disabled={selectedTasks.length === 0 }
+            onClick={handleBulkDelete}
+
+            >Delete</button>
             </div>
 
           </div>
@@ -198,6 +227,7 @@ function Dashboard() {
                   <div className="task-info">
                     <input
                       type="checkbox"
+                      checked={selectedTasks.includes(task.id)}
                       onChange={() => handleSelectedTasks(task.id)} />
 
                     {
