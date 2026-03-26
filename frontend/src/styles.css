@@ -1085,3 +1085,51 @@
     }
 
     
+    /* Overdue task styling */
+.task-item.overdue {
+  border-left: 4px solid #ff4444;
+  background-color: rgba(255, 68, 68, 0.1);
+  animation: pulse 2s infinite;
+}
+
+.deadline.overdue-text {
+  color: #ff4444;
+  font-weight: bold;
+}
+
+.overdue-badge {
+  color: #ff4444;
+  font-weight: bold;
+  margin-left: 5px;
+}
+
+/* Optional: Add a pulsing animation for more visibility */
+@keyframes pulse {
+  0% {
+    background-color: rgba(255, 68, 68, 0.1);
+  }
+  50% {
+    background-color: rgba(255, 68, 68, 0.2);
+  }
+  100% {
+    background-color: rgba(255, 68, 68, 0.1);
+  }
+}
+
+/* Adjust existing styles to work with the new overdue styling */
+.task-item {
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+}
+
+.task-item.priority-high {
+  border-left-color: #ff4444;
+}
+
+.task-item.priority-medium {
+  border-left-color: #ffaa44;
+}
+
+.task-item.priority-low {
+  border-left-color: #44ff44;
+}

@@ -49,6 +49,12 @@ function SmartScheduler() {
   const otherTasks = filteredTasks.filter((t) => !t.completed && !t.deadline);
   const completedTasks = filteredTasks.filter((t) => t.completed);
 
+ const isOverdue = (task) => {
+    const now = new Date();
+    const deadlineDate = new Date(task.deadline);
+    return deadlineDate < now;
+  };
+
   return (
     <section className="card">
       <h1>Smart Scheduler</h1>
@@ -75,7 +81,7 @@ function SmartScheduler() {
               <h3>Upcoming Deadlines</h3>
               <ul className="task-list">
                 {upcomingTasks.map((task) => (
-                  <li key={task.id} className={`task-item priority-${task.priority}`}>
+                  <li key={task.id} className={`task-item priority-${task.priority} ${isOverdue(task) ? 'overdue' : ''}`}>
                     <div className="task-info">
                       <span>{task.title}</span>
                       <div className="task-meta">
