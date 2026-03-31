@@ -1135,3 +1135,12 @@
 }
 
 
+.calendar-days{
+   display: grid;
+     grid-template-columns: auto auto auto;
+
+}
+
+.view-div{
+  display: flex;
+}
